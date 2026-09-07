@@ -1,0 +1,83 @@
+
+Ola tudo bem? Preciso desenvolver um projeto do zero, seria um case onde devo trabalhar com dados brutos e processar eles com um resultado analitico e sintetico, para apresentar em meu trabalho, vou explicar bem detalhado o meu cenario, gostaria que avaliasse como um especialista em TI, pois tem muita coisa que eu nao sei fazer e configurar, apesar de trabalhar com dados, veja se minhas ideias sao possiveis e me sujerisse suas criticas e melhorias reais para o projeto.
+
+No caminho:
+C:\SANTANDER\DATA_Master\Docs_para_Projeto\Case_Engenharia_de_dados.docx
+
+Tem o documento que explica como devo desenvolver este case, preciso que leia este documento para entender a descrição e requisitos, e agora vou expor as minhas ideias.
+
+- Gostaria de usar o Microsoft Azure com Databricks, usando pyspark. Motivo é o ambiente que trabalhao e seria legal e eu poderia entender bem os scripts que voce me ajudar a desenvolver, pois terei que aprensentar este case para uma banca de avaliadores, então penso que seria mais facil para mim.
+Eu não tenho uma conta na Azure, este seria um ponto que preciso de sua ajuda para criar la, sei que para usar os serviços da cloud terei um custo, mas quero que me ajuse a gastar o minino para este projeto.
+
+- GitHub: o projeto precisa estar hospedado no github, tambem nao tenho nenhum criado, outra ajuda que preciso sua
+
+- Pretendo usar dados publicos e gratuitos, de plataformas como: (Kaggle / Google Dataset Search), ainda não defini o tema, mas pretendo fazer algo do tipo de esporte, quero ver se tem dados do Campeonato Brasileiro ou dados do campeonato de Formula 1. Penso neste tema, pois gosto bastante e seria legal ter bastente ideias de trabalhar e processar os dados.
+
+Algumas coisas que ja pesquisei:
+https://www.kaggle.com/datasets/andreifnmg/campeonato-braileiro-20092018/data
+Projeto que busca informações deste site ( https://www.transfermarkt.pt/ )
+Analisando aqui, uma outra ideia seria trabalha com dados da Premier League, que é uma liga de muitos times competitivos, e pode ser que tenha dados bacanas para trabalhar.
+
+
+https://github.com/adaoduque/Brasileirao_Dataset/tree/master
+Este é um repositorio que parece que tem bastante dados, de 2003 a 2024, em formato JSON, parece ser bastente coisa a trabalhar
+
+https://github.com/dcaribou/transfermarkt-datasets
+repositorio com dados da premier league
+
+
+https://www.kaggle.com/datasets/ansari1212/fifa-world-cup-records-and-statistics1930-2022
+tema, copa do mundo, um tema que gosto bantante tambem, teria que avaliar a base de dados bruta para ver se pode se encaixar no projeto
+
+
+https://www.kaggle.com/datasets/kayoricardo/construtores-formula-1
+Este aqui achei muito fraco de dados. Sera que tem alguma outra fonte de dados de F1, mais enriquecida?
+
+
+- O processameto dos dados, gostaria de montar na infra as camadas (Raw / Bronze / Silver / Gold), para ir tratando os dados, e fazendo todos os requisitos que consta no documento.
+
+
+
+Etapas do Projeto que penso em fazer:
+
+Etapa 1:
+- Criar a conta na Azure
+- Criar o GitHub
+
+
+Etapa 2:
+- Fazer o provisionamento das Infra na Azure
+- Criar os conteinares e as camadas para receber os dados
+- Me parece que tem uma opção de fazer todo este provisionamento atraves de um script? Este é o ponto que mais terei dificuldades, e vou precisar muito da sua ajuda.
+- Configuração para acessar o Databricks, para poder criar os scripts
+
+
+Etapa 3:
+- Analisar os links apontados acima e entender quais sao mais ricos de dados brutos para se enquadrar melhor no projeto.
+- Definir a base de dados que vamos trabalhar, apos as suas sugestoes e analise nos links apontado acima, e sugestoes que voce pode me dar
+
+Etapa 4:
+- Upload de dados na camada RAW, na cloud. Podemos fazer manual num primeiro monento para inicar os testes, e depois montar um script para fazer o upload dos arquivos.
+
+Etapa 5:
+Esta etpa sera todo ETL dos dados, apesar de colocar toda em uma etapa só, penso em criar uma JOB no databricks, e dividir em tasks conforme abaixo, ai podemos ir criando por partes. Seja criterioso aqui tambem, e ver se isso é viavel.
+- Ingestao dos dados brutos na camada Bronze
+- Processamento dos dados, seguindo os requisitos da documentação, tratamento dos dados para a camada Silver
+- Tratamento dos dados para a camada Gold, onde teremos os dados finais, com as nossas ideias e insightis, para apresentação final, podemos criar varias tabelas na camada gold 
+
+Etapa 6:
+- Aqui penso em algo diferenciado, que não pede no projeto mas talvez gerar um dashboard, com dados sinteticos de algumas estatisticas importante (dependendo da base de dados escolhida). Aqui tambem irei preciar de suas ideias e experiencia, mas pensando em ser um case, de apresentação, usar o Dash de SQL que tem no datacricks, ou uma pagina em HTML onde eu possa exportar esta pagina para um PDF direto do browser. Aqui preciso muito da sua ajuda para nao ter muito custo, pois como mencionei, nao é uma coisa obrigatoria do Case, mas seria um diferencial que podemos fazer e eu ter uma avaliação boa pela banca.
+
+
+Bom, acho que consegui detalhar bem o meu cenario de como pretendo criar este projeto. Então agora queria que avaliasse e seja bastante critico, pois isso sera muito importante dentro do meu objetivo profissional e de autoconhecimento. Gostaria que em cima de tudo isso, possa criar um plano de trabalho, talvez criando um arquivo de BACKLOG.txt, de tudo que temos que fazer.
+Vamos usar este diretorio como base para nosso projeto, podendo criar subpastas neste caminho, para ficar bem organizado e fazer os commits no GitHub
+C:\SANTANDER\DATA_Master
+
+
+
+
+
+
+
+
+

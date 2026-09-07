@@ -1,0 +1,44 @@
+# Ferramentas portateis locais
+tools/
+
+# Dados processados (nao versionados por padrao)
+data/raw/*
+data/bronze/*
+data/silver/*
+data/gold/*
+!data/raw/.gitkeep
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# Arquivos temporarios e de log
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Variaveis de ambiente e credenciais
+.env
+.env.local
+secrets/
+*.key
+*.pem
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

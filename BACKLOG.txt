@@ -1,0 +1,110 @@
+================================================================================
+CASE ENGENHARIA DE DADOS - BACKLOG DE TRABALHO
+Tema: Campeonato Brasileiro de Futebol (Serie A)
+Plataforma: Databricks Community Edition (dev) + Azure Databricks (apresentacao)
+Diretorio base: C:\SANTANDER\DATA_Master
+================================================================================
+
+VISAO GERAL
+-----------
+Projeto de Engenharia de Dados que cobre extracao, ingestao, armazenamento,
+processamento (camadas Raw/Bronze/Silver/Gold), observabilidade, seguranca,
+mascaramento de dados, arquitetura escalavel e apresentacao analitica.
+
+FASE 0 - PREPARACAO DO AMBIENTE E CONTAS
+----------------------------------------
+[ ] 0.1 Criar conta no GitHub (repositorio publico)
+[ ] 0.2 Criar conta no Databricks Community Edition
+[ ] 0.3 Criar conta Microsoft Azure Free Trial (US$ 200 / 30 dias)
+[ ] 0.4 Configurar Git no ambiente local (git config user.name / user.email)
+[ ] 0.5 Instalar/verificar Python, PySpark, Delta Lake e bibliotecas auxiliares localmente
+[ ] 0.6 Clonar/inicializar repositorio Git em C:\SANTANDER\DATA_Master
+[ ] 0.7 Definir estrutura de pastas do projeto
+
+FASE 1 - ARQUITETURA E DOCUMENTACAO
+-----------------------------------
+[ ] 1.1 Desenhar arquitetura de solucao (data lakehouse, medallion)
+[ ] 1.2 Criar diagrama de arquitetura tecnica
+[ ] 1.3 Justificar escolha de Databricks, Delta Lake, PySpark e camadas
+[ ] 1.4 Documentar fonte de dados e licenca de uso
+[ ] 1.5 Iniciar README.md com objetivo, arquitetura e instrucoes
+
+FASE 2 - AQUISICAO E EXPLORACAO DOS DADOS BRUTOS
+--------------------------------------------------
+[ ] 2.1 Baixar dataset Brasileirao 2003-2024 (adaoduque/Brasileirao_Dataset)
+[ ] 2.2 Explorar estrutura dos arquivos JSON
+[ ] 2.3 Catalogar entidades: campeonatos, edicoes, rodadas, jogos, clubes, jogadores, estatisticas
+[ ] 2.4 Identificar campos que permitirao analises ricas (gols, cartoes, escudos, datas, estadios)
+[ ] 2.5 Armazenar copia fiel dos arquivos originais na pasta local BaseDados_Bruto
+
+FASE 3 - PROVISIONAMENTO DE INFRAESTRUTURA
+--------------------------------------------
+[ ] 3.1 Desenvolver e testar no Databricks Community Edition
+[ ] 3.2 Criar script de provisionamento Azure (Bicep ou Terraform) para replicacao
+[ ] 3.3 Criar recursos minimos no Azure: Resource Group, Storage Account, Databricks Workspace
+[ ] 3.4 Configurar DBFS/ADLS com estrutura de camadas
+[ ] 3.5 Documentar passo a passo de provisionamento manual como fallback
+
+FASE 4 - PIPELINE DE DADOS (CAMADAS MEDALLION)
+----------------------------------------------
+[ ] 4.1 RAW: Upload/carregamento dos JSON brutos (manually via DBFS inicialmente)
+[ ] 4.2 RAW: Automatizar upload via script Python/DBUtils
+[ ] 4.3 BRONZE: Criar notebook de ingestao dos JSON para tabelas Delta (schema preserve)
+[ ] 4.4 BRONZE: Adicionar colunas de auditoria (data_ingestao, fonte, arquivo_origem)
+[ ] 4.5 SILVER: Criar notebook de limpeza e normalizacao
+[ ] 4.6 SILVER: Tratamento de tipos, nulos, duplicatas, normalizacao de nomes
+[ ] 4.7 SILVER: Criar tabelas dimensionais (times, jogadores, estadios, campeonatos) e fato (partidas)
+[ ] 4.8 GOLD: Criar notebook com agregacoes e metricas de negocio
+[ ] 4.9 GOLD: Construir tabelas analiticas (desempenho por time, artilharia, aproveitamento mandante/visitante, evolucao historica, etc.)
+[ ] 4.10 Criar job Databricks com tasks separadas (Bronze, Silver, Gold)
+
+FASE 5 - SEGURANCA, MASCARAMENTO E LGPD
+----------------------------------------
+[ ] 5.1 Identificar campos que simulam dados sensiveis (nomes de tecnicos, jogadores)
+[ ] 5.2 Implementar tecnicas de mascaramento: hash SHA-256, ofuscacao, substituicao por categoria
+[ ] 5.3 Criar camada anonimizada opcional (Silver ou Gold)
+[ ] 5.4 Demonstrar controle de acesso via ACLs e secret scopes
+[ ] 5.5 Documentar conformidade com LGPD e boas praticas de governanca
+
+FASE 6 - OBSERVABILIDADE
+------------------------
+[ ] 6.1 Criar tabela/metadado de auditoria pipeline_audit
+[ ] 6.2 Registrar inicio/fim, linhas processadas, status e mensagens de erro por task
+[ ] 6.3 Criar notebook de monitoramento/health check
+[ ] 6.4 Configurar alertas simples (ex: e-mail ou mensagem em caso de falha)
+[ ] 6.5 Adicionar logging estruturado nos notebooks
+
+FASE 7 - ANALISE E DASHBOARD
+----------------------------
+[ ] 7.1 Definir indicadores e insights chave
+[ ] 7.2 Criar consultas SQL analiticas na camada Gold
+[ ] 7.3 Gerar dashboard HTML local com Plotly (custo zero)
+[ ] 7.4 Exportar dashboard para PDF diretamente do browser
+[ ] 7.5 Preparar visualizacoes alternativas no proprio Databricks notebook
+
+FASE 8 - TESTES, REPRODUTIBILIDADE E ENTREGA
+----------------------------------------------
+[ ] 8.1 Validar end-to-end do pipeline
+[ ] 8.2 Testar reproducao em outra maquina/ambiente
+[ ] 8.3 Revisar README com instrucoes claras de execucao
+[ ] 8.4 Subir todo o projeto para o GitHub
+[ ] 8.5 Criar apresentacao (slides) com arquitetura, justificativas e demo
+[ ] 8.6 Preparar versao para apresentacao na Azure (provisionar e destruir apos)
+
+MELHORIAS FUTURAS
+-----------------
+[ ] MF.1 Automatizar ingestao continua com Databricks Jobs/Workflows
+[ ] MF.2 Adicionar streaming simulado de eventos de partida
+[ ] MF.3 Implementar Unity Catalog e data governance completa
+[ ] MF.4 Criar testes unitarios com pytest e great_expectations
+[ ] MF.5 Adicionar CI/CD com GitHub Actions
+[ ] MF.6 Expandir para outras competicoes (Copa do Brasil, Libertadores)
+
+NOTAS
+-----
+- Prioridade: desenvolver e validar tudo no Databricks Community Edition primeiro.
+- Azure so sera usado para replicacao e apresentacao final, com instrucoes para
+  destruir recursos ao terminar e evitar custos.
+- Dashboard sera HTML local (Plotly) para evitar cobranca de SQL Warehouse.
+- Dados sao publicos; seguranca e mascaramento serao demonstrados com exemplos
+  praticos, mesmo sem PII real.
