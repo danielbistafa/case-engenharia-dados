@@ -24,5 +24,6 @@ def create_spark_session(app_name: str = "CaseEngenhariaDados") -> SparkSession:
         .config("spark.sql.warehouse.dir", str(SPARK_WAREHOUSE))
         .config("spark.sql.adaptive.enabled", "true")
         .config("spark.sql.adaptive.coalescePartitions.enabled", "true")
+        .config("spark.sql.legacy.timeParserPolicy", "LEGACY")
     )
     return configure_spark_with_delta_pip(builder).getOrCreate()
