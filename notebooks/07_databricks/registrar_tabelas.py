@@ -1,10 +1,15 @@
 """Registra no Unity Catalog as tabelas Delta produzidas pelo pipeline."""
 
+import os
 import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if globals().get("__file__"):
+    src_path = str(Path(__file__).resolve().parents[2] / "src")
+else:
+    src_path = os.path.join(os.getcwd(), "src")
+sys.path.insert(0, src_path)
 
 from config import (  # noqa: E402
     BRONZE_DIR,

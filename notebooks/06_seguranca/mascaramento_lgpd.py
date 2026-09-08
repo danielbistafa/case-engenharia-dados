@@ -7,7 +7,11 @@ from pathlib import Path
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, concat_ws, current_timestamp, length, lit, sha2, substring, when
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if globals().get("__file__"):
+    src_path = str(Path(__file__).resolve().parents[2] / "src")
+else:
+    src_path = os.path.join(os.getcwd(), "src")
+sys.path.insert(0, src_path)
 
 from config import IS_DATABRICKS, SECURITY_DIR, SILVER_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402

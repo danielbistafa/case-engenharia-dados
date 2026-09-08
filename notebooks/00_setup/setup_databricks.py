@@ -1,10 +1,16 @@
 """Cria schema e volume gerenciado usados pelo pipeline no Databricks."""
 
+import os
 import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+# No Databricks o arquivo pode ser executado sem __file__; usamos o diretorio de trabalho como fallback.
+if globals().get("__file__"):
+    src_path = str(Path(__file__).resolve().parents[2] / "src")
+else:
+    src_path = os.path.join(os.getcwd(), "src")
+sys.path.insert(0, src_path)
 
 from config import DATABRICKS_CATALOG, DATABRICKS_SCHEMA, DATABRICKS_VOLUME, IS_DATABRICKS  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402
