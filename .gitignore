@@ -6,10 +6,12 @@ data/raw/*
 data/bronze/*
 data/silver/*
 data/gold/*
+data/observability/*
 !data/raw/.gitkeep
 !data/bronze/.gitkeep
 !data/silver/.gitkeep
 !data/gold/.gitkeep
+!data/observability/.gitkeep
 
 # Arquivos temporarios e de log
 *.log

@@ -161,7 +161,7 @@ def ingest_bronze(
     )
 
     print("Ingestao Bronze concluida com sucesso!")
-    return df, temp_jsonl_dir
+    return df
 
 
 def cleanup_temp_files(temp_jsonl_dir: Path) -> None:
@@ -176,15 +176,18 @@ def cleanup_temp_files(temp_jsonl_dir: Path) -> None:
 
 if __name__ == "__main__":
     spark = create_spark_session(app_name="IngestaoBronzeBrasileirao")
-    df_bronze, temp_dir = ingest_bronze(spark)
+    try:
+        df_bronze = ingest_bronze(spark)
 
-    print("\nSchema da camada Bronze:")
-    df_bronze.printSchema()
+        print("\nSchema da camada Bronze:")
+        df_bronze.printSchema()
 
-    print("\nAmostra de registros:")
-    df_bronze.select("temporada", "rodada", "clubs", "goals", "date", "stadium").show(5, truncate=False)
+        print("\nAmostra de registros:")
+        df_bronze.select("temporada", "rodada", "clubs", "goals", "date", "stadium").show(5, truncate=False)
 
-    print(f"Total de registros: {df_bronze.count()}")
-
-    cleanup_temp_files(temp_dir)
-    spark.stop()
+        print(f"Total de registros: {df_bronze.count()}")
+    finally:
+        # Limpa temporarios gerados durante a ingestao
+        temp_jsonl_dir = BRONZE_DIR / "_temp_partidas_jsonl"
+        cleanup_temp_files(temp_jsonl_dir)
+        spark.stop()
