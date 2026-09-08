@@ -69,12 +69,16 @@ C:\SANTANDER\DATA_Master
 │   ├── raw/
 │   ├── bronze/
 │   ├── silver/
-│   └── gold/
+│   ├── gold/
+│   ├── observability/
+│   └── security/
 ├── notebooks/             # Notebooks PySpark organizados por camada
 │   ├── 01_bronze/
 │   ├── 02_silver/
 │   ├── 03_gold/
-│   └── 04_dashboard/
+│   ├── 04_pipeline/
+│   ├── 05_observabilidade/
+│   └── 06_seguranca/
 ├── infra/                 # Scripts de provisionamento (Bicep/Terraform)
 ├── scripts/               # Scripts utilitários (upload, download, setup)
 ├── src/                   # Código Python reutilizável
@@ -106,13 +110,17 @@ C:\SANTANDER\DATA_Master
 | Arquitetura      | Lakehouse escalável com Delta Lake e particionamento              |
 | Escalabilidade   | Clusters auto-scaling, jobs orquestrados, ADLS Gen2               |
 
+## Segurança e LGPD
+
+Os dados esportivos utilizados são públicos e não são classificados neste projeto como dados pessoais sensíveis. Para demonstrar práticas aplicáveis a ambientes corporativos, a camada protegida utiliza tokens SHA-256 com salt externo e mascaramento de nomes de jogadores e técnicos. O salt deve ser fornecido pela variável `MASKING_SALT` e nunca versionado. A estratégia de acesso, Secret Scopes, criptografia e limitações da pseudonimização está documentada em `docs/seguranca_lgpd.md`.
+
 ## Reprodutibilidade
 
 Todo o código, instruções e scripts de configuração estarão versionados no GitHub. A execução poderá ser reproduzida no Databricks Community Edition sem custo.
 
 ## Fonte dos Dados
 
-- `Brasileirao_Dataset` (GitHub – adaoduque): dados históricos do Brasileirão 2003-2024 em JSON.
+- `Brasileirao_Dataset` (GitHub – adaoduque): dados históricos do Brasileirão 2003-2025 em JSON.
 
 ## Autor
 

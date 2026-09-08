@@ -10,6 +10,7 @@ RAW_CSV_DIR = RAW_DIR
 BRONZE_DIR = PROJECT_ROOT / "data" / "bronze"
 SILVER_DIR = PROJECT_ROOT / "data" / "silver"
 GOLD_DIR = PROJECT_ROOT / "data" / "gold"
+SECURITY_DIR = PROJECT_ROOT / "data" / "security"
 
 SPARK_WAREHOUSE = PROJECT_ROOT / "data" / "spark-warehouse"
 

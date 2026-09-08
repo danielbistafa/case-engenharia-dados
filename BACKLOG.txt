@@ -60,11 +60,11 @@ FASE 4 - PIPELINE DE DADOS (CAMADAS MEDALLION)
 
 FASE 5 - SEGURANCA, MASCARAMENTO E LGPD
 ----------------------------------------
-[ ] 5.1 Identificar campos que simulam dados sensiveis (nomes de tecnicos, jogadores) - PROXIMA FASE
-[ ] 5.2 Implementar tecnicas de mascaramento: hash SHA-256, ofuscacao, substituicao por categoria
-[ ] 5.3 Criar camada anonimizada opcional (Silver ou Gold)
-[ ] 5.4 Demonstrar controle de acesso via ACLs e secret scopes
-[ ] 5.5 Documentar conformidade com LGPD e boas praticas de governanca
+[x] 5.1 Identificar campos que simulam dados sensiveis (nomes de tecnicos, jogadores)
+[x] 5.2 Implementar tecnicas de mascaramento: hash SHA-256 com salt externo e ofuscacao
+[x] 5.3 Criar camada protegida opcional (data/security)
+[ ] 5.4 Demonstrar controle de acesso via ACLs e secret scopes - PENDENTE DATABRICKS
+[x] 5.5 Documentar conformidade com LGPD e boas praticas de governanca
 
 FASE 6 - OBSERVABILIDADE
 ------------------------
