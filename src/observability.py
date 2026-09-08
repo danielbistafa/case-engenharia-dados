@@ -9,15 +9,13 @@ adaptado para Delta Lake.
 import json
 import uuid
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Callable, Optional
 
 from pyspark.sql import DataFrame, SparkSession
 
-from config import PROJECT_ROOT  # noqa: E402
+from config import OBSERVABILITY_DIR  # noqa: E402
 
 
-OBSERVABILITY_DIR = PROJECT_ROOT / "data" / "observability"
 AUDIT_FILE_PATH = OBSERVABILITY_DIR / "pipeline_audit.jsonl"
 
 

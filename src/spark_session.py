@@ -1,16 +1,19 @@
-"""Criacao padronizada da SparkSession com suporte a Delta Lake."""
+"""Criacao padronizada da SparkSession local ou uso da sessao do Databricks."""
 import os
 import sys
 
 from pyspark.sql import SparkSession
-from delta import configure_spark_with_delta_pip
 
-from config import SPARK_WAREHOUSE
+from config import IS_DATABRICKS, SPARK_WAREHOUSE
 
 
 def create_spark_session(app_name: str = "CaseEngenhariaDados") -> SparkSession:
-    """Cria e retorna uma SparkSession configurada para uso local."""
-    # Garante que os workers PySpark usem o mesmo interpretador Python
+    """Retorna a sessao gerenciada do Databricks ou cria uma sessao Delta local."""
+    if IS_DATABRICKS:
+        return SparkSession.getActiveSession() or SparkSession.builder.getOrCreate()
+
+    from delta import configure_spark_with_delta_pip
+
     python_executable = sys.executable
     os.environ.setdefault("PYSPARK_PYTHON", python_executable)
     os.environ.setdefault("PYSPARK_DRIVER_PYTHON", python_executable)

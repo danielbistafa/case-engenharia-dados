@@ -114,9 +114,13 @@ C:\SANTANDER\DATA_Master
 
 Os dados esportivos utilizados são públicos e não são classificados neste projeto como dados pessoais sensíveis. Para demonstrar práticas aplicáveis a ambientes corporativos, a camada protegida utiliza tokens SHA-256 com salt externo e mascaramento de nomes de jogadores e técnicos. O salt deve ser fornecido pela variável `MASKING_SALT` e nunca versionado. A estratégia de acesso, Secret Scopes, criptografia e limitações da pseudonimização está documentada em `docs/seguranca_lgpd.md`.
 
+## Execução no Databricks
+
+A implantação em Databricks usa Unity Catalog Volume e um Workflow Serverless definido em `databricks.yml`. Somente os JSON Raw são enviados; as camadas Bronze, Silver, Gold e protegida são recriadas na plataforma. Consulte `docs/databricks.md` para criação do volume, upload, Secret Scope, deploy e execução do Job.
+
 ## Reprodutibilidade
 
-Todo o código, instruções e scripts de configuração estarão versionados no GitHub. A execução poderá ser reproduzida no Databricks Community Edition sem custo.
+Todo o código, instruções e scripts de configuração estão versionados no GitHub. A execução local usa as dependências fixadas em `requirements.txt`, e a execução no Databricks Free Edition usa compute Serverless.
 
 ## Fonte dos Dados
 

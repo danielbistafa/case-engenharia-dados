@@ -39,11 +39,11 @@ FASE 2 - AQUISICAO E EXPLORACAO DOS DADOS BRUTOS
 
 FASE 3 - PROVISIONAMENTO DE INFRAESTRUTURA
 --------------------------------------------
-[ ] 3.1 Desenvolver e testar no Databricks Community Edition - PENDENTE
+[ ] 3.1 Desenvolver e testar no Databricks Free Edition - ARTEFATOS PRONTOS, PENDENTE EXECUCAO
 [ ] 3.2 Criar script de provisionamento Azure (Bicep ou Terraform) para replicacao - OPCIONAL
 [ ] 3.3 Criar recursos minimos no Azure: Resource Group, Storage Account, Databricks Workspace - PENDENTE
-[ ] 3.4 Configurar DBFS/ADLS com estrutura de camadas - PENDENTE
-[ ] 3.5 Documentar passo a passo de provisionamento manual como fallback - PENDENTE
+[ ] 3.4 Configurar Unity Catalog Volume/ADLS com estrutura de camadas - SCRIPT PRONTO, PENDENTE EXECUCAO
+[x] 3.5 Documentar passo a passo de provisionamento manual como fallback - docs/databricks.md
 
 FASE 4 - PIPELINE DE DADOS (CAMADAS MEDALLION)
 ----------------------------------------------
@@ -56,14 +56,14 @@ FASE 4 - PIPELINE DE DADOS (CAMADAS MEDALLION)
 [x] 4.7 SILVER: Criar tabelas dimensionais (clubes, jogadores, estadios) e fato (partidas, gols, cartoes, estatisticas)
 [x] 4.8 GOLD: Criar notebook com agregacoes e metricas de negocio
 [x] 4.9 GOLD: Construir tabelas analiticas (desempenho por time, artilharia, aproveitamento mandante/visitante, evolucao historica, etc.)
-[ ] 4.10 Criar job Databricks com tasks separadas (Bronze, Silver, Gold) - PENDENTE DATABRICKS
+[ ] 4.10 Criar job Databricks com tasks separadas - databricks.yml PRONTO, PENDENTE DEPLOY
 
 FASE 5 - SEGURANCA, MASCARAMENTO E LGPD
 ----------------------------------------
 [x] 5.1 Identificar campos que simulam dados sensiveis (nomes de tecnicos, jogadores)
 [x] 5.2 Implementar tecnicas de mascaramento: hash SHA-256 com salt externo e ofuscacao
 [x] 5.3 Criar camada protegida opcional (data/security)
-[ ] 5.4 Demonstrar controle de acesso via ACLs e secret scopes - PENDENTE DATABRICKS
+[ ] 5.4 Demonstrar controle de acesso via ACLs e secret scopes - CODIGO/DOC PRONTOS, PENDENTE EXECUCAO
 [x] 5.5 Documentar conformidade com LGPD e boas praticas de governanca
 
 FASE 6 - OBSERVABILIDADE

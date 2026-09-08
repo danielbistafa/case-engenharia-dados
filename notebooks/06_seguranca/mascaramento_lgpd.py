@@ -9,17 +9,22 @@ from pyspark.sql.functions import col, concat_ws, current_timestamp, length, lit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from config import SECURITY_DIR, SILVER_DIR  # noqa: E402
+from config import IS_DATABRICKS, SECURITY_DIR, SILVER_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402
 
 
-def require_masking_salt() -> str:
-    """Obtem o segredo usado na pseudonimizacao sem inclui-lo no codigo."""
+def require_masking_salt(spark: SparkSession) -> str:
+    """Obtem o segredo do ambiente local ou de um Databricks Secret Scope."""
+    if IS_DATABRICKS:
+        from pyspark.dbutils import DBUtils
+
+        scope = os.getenv("DATABRICKS_SECRET_SCOPE", "case-engenharia-dados")
+        key = os.getenv("DATABRICKS_SECRET_KEY", "masking-salt")
+        return DBUtils(spark).secrets.get(scope=scope, key=key)
+
     salt = os.getenv("MASKING_SALT")
     if not salt:
-        raise RuntimeError(
-            "Defina MASKING_SALT no ambiente local ou em um Databricks Secret Scope."
-        )
+        raise RuntimeError("Defina MASKING_SALT no ambiente local.")
     return salt
 
 
@@ -79,7 +84,7 @@ def save_protected(df: DataFrame, table_name: str) -> None:
 
 def build_security_views(spark: SparkSession) -> dict[str, DataFrame]:
     """Gera as tabelas protegidas para demonstracao de governanca."""
-    salt = require_masking_salt()
+    salt = require_masking_salt(spark)
     SECURITY_DIR.mkdir(parents=True, exist_ok=True)
 
     jogadores = spark.read.format("delta").load(str(SILVER_DIR / "dim_jogador"))
