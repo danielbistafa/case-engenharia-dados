@@ -11,11 +11,11 @@ Objetivos:
 
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import (
-    coalesce,
     col,
     concat_ws,
     current_timestamp,
@@ -27,13 +27,13 @@ from pyspark.sql.functions import (
     month,
     regexp_replace,
     struct,
-    to_date,
     trim,
+    udf,
     upper,
     when,
     year,
 )
-from pyspark.sql.types import DoubleType, IntegerType, StringType
+from pyspark.sql.types import DateType, DoubleType, IntegerType, StringType
 
 if "DATABRICKS_RUNTIME_VERSION" in os.environ:
     REPO_ROOT = Path(os.getcwd()).parents[1]
@@ -45,6 +45,19 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from config import BRONZE_DIR, SILVER_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402
 from utils import add_audit_columns, normalize_text  # noqa: E402
+
+
+@udf(DateType())
+def parse_brasileirao_date(date_value: str):
+    """Converte datas do Brasileirao em formato dd/MM/yyyy ou dd/MM/yy."""
+    if not date_value:
+        return None
+    for fmt in ("%d/%m/%Y", "%d/%m/%y"):
+        try:
+            return datetime.strptime(date_value, fmt).date()
+        except ValueError:
+            continue
+    return None
 
 
 def read_bronze(spark: SparkSession, bronze_path: Path = BRONZE_DIR / "partidas") -> DataFrame:
@@ -72,10 +85,7 @@ def create_fato_partida(df_bronze: DataFrame) -> DataFrame:
         .withColumn("tecnico_visitante", col("coach.away"))
         .withColumn("formacao_mandante", col("formation.home"))
         .withColumn("formacao_visitante", col("formation.away"))
-        .withColumn(
-            "data_partida",
-            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
-        )
+        .withColumn("data_partida", parse_brasileirao_date(col("date")))
         .withColumn(
             "vencedor",
             when(col("mandante_placar") > col("visitante_placar"), col("mandante"))
@@ -174,10 +184,7 @@ def create_fato_gols(df_bronze: DataFrame, df_fato: DataFrame) -> DataFrame:
         .withColumn("jogador", explode(col("jogadores_gols")))
         .withColumn("nome_jogador", col("jogador.player"))
         .withColumn("minuto", explode(col("jogador.gols")))
-        .withColumn(
-            "data_partida",
-            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
-        )
+        .withColumn("data_partida", parse_brasileirao_date(col("date")))
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
@@ -243,10 +250,7 @@ def create_fato_cartoes(df_bronze: DataFrame, df_fato: DataFrame) -> DataFrame:
         .unionByName(fatos[1])
         .unionByName(fatos[2])
         .unionByName(fatos[3])
-        .withColumn(
-            "data_partida",
-            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
-        )
+        .withColumn("data_partida", parse_brasileirao_date(col("date")))
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
@@ -294,10 +298,7 @@ def create_fato_estatisticas(df_bronze: DataFrame) -> DataFrame:
             col("stat.home").alias("valor_mandante"),
             col("stat.away").alias("valor_visitante"),
         )
-        .withColumn(
-            "data_partida",
-            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
-        )
+        .withColumn("data_partida", parse_brasileirao_date(col("date")))
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
