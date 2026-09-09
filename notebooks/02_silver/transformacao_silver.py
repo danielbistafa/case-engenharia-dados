@@ -15,6 +15,7 @@ from pathlib import Path
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import (
+    coalesce,
     col,
     concat_ws,
     current_timestamp,
@@ -71,7 +72,10 @@ def create_fato_partida(df_bronze: DataFrame) -> DataFrame:
         .withColumn("tecnico_visitante", col("coach.away"))
         .withColumn("formacao_mandante", col("formation.home"))
         .withColumn("formacao_visitante", col("formation.away"))
-        .withColumn("data_partida", to_date(col("date"), "dd/MM/yy"))
+        .withColumn(
+            "data_partida",
+            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
+        )
         .withColumn(
             "vencedor",
             when(col("mandante_placar") > col("visitante_placar"), col("mandante"))
@@ -170,7 +174,10 @@ def create_fato_gols(df_bronze: DataFrame, df_fato: DataFrame) -> DataFrame:
         .withColumn("jogador", explode(col("jogadores_gols")))
         .withColumn("nome_jogador", col("jogador.player"))
         .withColumn("minuto", explode(col("jogador.gols")))
-        .withColumn("data_partida", to_date(col("date"), "dd/MM/yy"))
+        .withColumn(
+            "data_partida",
+            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
+        )
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
@@ -236,7 +243,10 @@ def create_fato_cartoes(df_bronze: DataFrame, df_fato: DataFrame) -> DataFrame:
         .unionByName(fatos[1])
         .unionByName(fatos[2])
         .unionByName(fatos[3])
-        .withColumn("data_partida", to_date(col("date"), "dd/MM/yy"))
+        .withColumn(
+            "data_partida",
+            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
+        )
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
@@ -284,7 +294,10 @@ def create_fato_estatisticas(df_bronze: DataFrame) -> DataFrame:
             col("stat.home").alias("valor_mandante"),
             col("stat.away").alias("valor_visitante"),
         )
-        .withColumn("data_partida", to_date(col("date"), "dd/MM/yy"))
+        .withColumn(
+            "data_partida",
+            coalesce(to_date(col("date"), "dd/MM/yyyy"), to_date(col("date"), "dd/MM/yy")),
+        )
         .withColumn(
             "partida_id",
             md5(concat_ws("_", col("temporada"), col("rodada"), col("clube"), col("adversario"), col("data_partida")))
