@@ -100,6 +100,33 @@ MELHORIAS FUTURAS
 [ ] MF.5 Adicionar CI/CD com GitHub Actions
 [ ] MF.6 Expandir para outras competicoes (Copa do Brasil, Libertadores)
 
+PONTO DE PARADA - EXECUCAO NO DATABRICKS FREE EDITION
+-----------------------------------------------------
+Data: sessao em andamento (pausa para retomada).
+
+CONCLUIDO ATE O MOMENTO:
+[x] Importar repositorio GitHub como Git folder no Databricks.
+[x] Criar schema workspace.brasileirao.
+[x] Criar Volume workspace.brasileirao.case_dados.
+[x] Enviar os 23 arquivos JSON brutos para raw/Brasileirao_Dataset/data no Volume.
+[x] Executar notebook 01_bronze/ingestao_bronze.py com sucesso (9.165 registros).
+[x] Executar notebook 02_silver/transformacao_silver.py com sucesso:
+    - fato_partida: 9.165
+    - fato_gols: 10.820
+    - fato_cartoes: 20.947
+    - fato_estatisticas: 82.794
+    - dim_jogador: 4.394
+    - dim_clube: 160
+    - dim_estadio: 269
+
+PROXIMOS PASSOS PARA PROXIMA SESSAO:
+[ ] Executar notebook 03_gold/agregacoes_gold.py (camada Gold).
+[ ] Executar notebook 06_seguranca/mascaramento_lgpd.py (mascaramento LGPD).
+[ ] Executar notebook 07_databricks/registrar_tabelas.py (registro no Unity Catalog).
+[ ] Executar notebook 05_observabilidade/health_check.py (validacao).
+[ ] Opcional: criar e executar o Workflow/Job a partir de databricks.yml.
+[ ] Opcional: criar visualizacoes/dashboard no Databricks notebook.
+
 NOTAS
 -----
 - Prioridade: desenvolver e validar tudo no Databricks Community Edition primeiro.
