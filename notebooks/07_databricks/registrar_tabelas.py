@@ -64,15 +64,16 @@ def main() -> None:
 
     for table_name, path in TABLES.items():
         table = validate_identifier(table_name)
+        location = f"dbfs:{path.as_posix()}"
         spark.sql(
             f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`{table}` "
-            f"USING DELTA LOCATION '{path.as_posix()}'"
+            f"USING DELTA LOCATION '{location}'"
         )
         print(f"Registrada: {catalog}.{schema}.{table}")
 
     spark.sql(
         f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`pipeline_audit` "
-        f"USING JSON LOCATION '{OBSERVABILITY_DIR.as_posix()}'"
+        f"USING JSON LOCATION 'dbfs:{OBSERVABILITY_DIR.as_posix()}'"
     )
     print(f"Registrada: {catalog}.{schema}.pipeline_audit")
 
