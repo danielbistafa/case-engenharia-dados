@@ -9,6 +9,7 @@ Objetivos:
 - Tratar inconsistencias e valores nulos
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -31,9 +32,14 @@ from pyspark.sql.functions import (
     when,
     year,
 )
-from pyspark.sql.types import IntegerType, DoubleType, StringType
+from pyspark.sql.types import DoubleType, IntegerType, StringType
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if "DATABRICKS_RUNTIME_VERSION" in os.environ:
+    REPO_ROOT = Path(os.getcwd()).parents[1]
+else:
+    REPO_ROOT = Path(__file__).resolve().parents[2]
+
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from config import BRONZE_DIR, SILVER_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402

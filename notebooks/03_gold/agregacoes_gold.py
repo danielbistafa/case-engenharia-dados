@@ -5,6 +5,7 @@ A partir das tabelas Silver, cria tabelas analiticas prontas para
 visualizacao em dashboards e apresentacoes.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -15,21 +16,27 @@ from pyspark.sql.functions import (
     count,
     countDistinct,
     current_timestamp,
+    dense_rank,
     lit,
     max,
     min,
     regexp_replace,
     round,
+    row_number,
     sum,
     trim,
     when,
 )
 from pyspark.sql.window import Window
-from pyspark.sql.functions import row_number, dense_rank
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if "DATABRICKS_RUNTIME_VERSION" in os.environ:
+    REPO_ROOT = Path(os.getcwd()).parents[1]
+else:
+    REPO_ROOT = Path(__file__).resolve().parents[2]
 
-from config import SILVER_DIR, GOLD_DIR  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from config import GOLD_DIR, SILVER_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402
 from utils import add_audit_columns  # noqa: E402
 

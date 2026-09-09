@@ -8,18 +8,24 @@ Pode ser executado localmente (com PySpark) ou importado como notebook no Databr
 """
 
 import json
+import os
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, current_timestamp, input_file_name, col
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, current_timestamp, input_file_name, lit
 
-import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if "DATABRICKS_RUNTIME_VERSION" in os.environ:
+    REPO_ROOT = Path(os.getcwd()).parents[1]
+else:
+    REPO_ROOT = Path(__file__).resolve().parents[2]
 
-from config import RAW_JSON_DIR, BRONZE_DIR  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from config import BRONZE_DIR, RAW_JSON_DIR  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402
 
 

@@ -17,6 +17,25 @@ STAGE_SCRIPTS = {
 }
 
 
+def _project_root() -> Path:
+    """Localiza a raiz do projeto, funcionando localmente e no Databricks."""
+    if os.getenv("CASE_PROJECT_ROOT"):
+        return Path(os.environ["CASE_PROJECT_ROOT"])
+
+    if "__file__" in globals():
+        return Path(__file__).resolve().parents[1]
+
+    cwd = Path.cwd()
+    for parent in [cwd] + list(cwd.parents):
+        if (parent / "src").is_dir() and (parent / "notebooks").is_dir():
+            return parent
+
+    raise RuntimeError(
+        "Nao foi possivel localizar a raiz do projeto. "
+        "Defina a variavel de ambiente CASE_PROJECT_ROOT."
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", required=True, choices=STAGE_SCRIPTS)
@@ -34,7 +53,7 @@ def main() -> None:
     os.environ["DATABRICKS_SECRET_SCOPE"] = args.secret_scope
     os.environ["DATABRICKS_SECRET_KEY"] = args.secret_key
 
-    project_root = Path(__file__).resolve().parents[1]
+    project_root = _project_root()
     script_path = project_root / STAGE_SCRIPTS[args.stage]
     if args.stage in {"bronze", "silver", "gold", "security"}:
         import sys

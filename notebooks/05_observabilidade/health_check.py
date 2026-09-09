@@ -6,10 +6,16 @@ alem de validar a existencia e contagem das tabelas nas camadas
 Bronze, Silver e Gold.
 """
 
+import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+if "DATABRICKS_RUNTIME_VERSION" in os.environ:
+    REPO_ROOT = Path(os.getcwd()).parents[1]
+else:
+    REPO_ROOT = Path(__file__).resolve().parents[2]
+
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from config import BRONZE_DIR, GOLD_DIR, SILVER_DIR  # noqa: E402
 from observability import get_audit_table  # noqa: E402
