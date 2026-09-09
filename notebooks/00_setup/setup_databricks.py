@@ -5,12 +5,54 @@ import re
 import sys
 from pathlib import Path
 
-# No Databricks o arquivo pode ser executado sem __file__; usamos o diretorio de trabalho como fallback.
-if globals().get("__file__"):
-    src_path = str(Path(__file__).resolve().parents[2] / "src")
-else:
-    src_path = os.path.join(os.getcwd(), "src")
-sys.path.insert(0, src_path)
+
+def _repo_root() -> str:
+    """Localiza a raiz do repositorio em execucao local ou no Databricks."""
+    # Execucao local: __file__ sempre existe
+    if "DATABRICKS_RUNTIME_VERSION" not in os.environ:
+        return str(Path(__file__).resolve().parents[2])
+
+    # Databricks: tenta usar o caminho do notebook via dbutils
+    try:
+        from pyspark.dbutils import DBUtils
+        from pyspark.sql import SparkSession
+
+        spark = globals().get("spark") or SparkSession.builder.getOrCreate()
+        dbutils = DBUtils(spark)
+        notebook_path = (
+            dbutils.notebook.entry_point.getDbutils()
+            .notebook()
+            .getContext()
+            .notebookPath()
+            .get()
+        )
+        if notebook_path:
+            parts = Path(notebook_path).parts
+            if "case-engenharia-dados" in parts:
+                idx = parts.index("case-engenharia-dados")
+                return str(Path(*parts[: idx + 1]))
+    except Exception:
+        pass
+
+    # Fallbacks para Git folders comuns no Databricks
+    username = os.getenv("DATABRICKS_USERNAME", "")
+    candidates = [
+        "/Workspace/Repos/case-engenharia-dados",
+        f"/Workspace/Repos/{username}/case-engenharia-dados",
+        "/Workspace/Users/case-engenharia-dados",
+        f"/Workspace/Users/{username}/case-engenharia-dados",
+    ]
+    for candidate in candidates:
+        if Path(candidate).exists():
+            return candidate
+
+    raise RuntimeError(
+        "Nao foi possivel localizar a raiz do repositorio no Databricks. "
+        "Verifique se o Git folder foi importado ou defina CASE_PROJECT_ROOT."
+    )
+
+
+sys.path.insert(0, os.path.join(_repo_root(), "src"))
 
 from config import DATABRICKS_CATALOG, DATABRICKS_SCHEMA, DATABRICKS_VOLUME, IS_DATABRICKS  # noqa: E402
 from spark_session import create_spark_session  # noqa: E402

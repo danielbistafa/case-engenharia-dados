@@ -5,11 +5,51 @@ import re
 import sys
 from pathlib import Path
 
-if globals().get("__file__"):
-    src_path = str(Path(__file__).resolve().parents[2] / "src")
-else:
-    src_path = os.path.join(os.getcwd(), "src")
-sys.path.insert(0, src_path)
+
+def _repo_root() -> str:
+    """Localiza a raiz do repositorio em execucao local ou no Databricks."""
+    if "DATABRICKS_RUNTIME_VERSION" not in os.environ:
+        return str(Path(__file__).resolve().parents[2])
+
+    try:
+        from pyspark.dbutils import DBUtils
+        from pyspark.sql import SparkSession
+
+        spark = globals().get("spark") or SparkSession.builder.getOrCreate()
+        dbutils = DBUtils(spark)
+        notebook_path = (
+            dbutils.notebook.entry_point.getDbutils()
+            .notebook()
+            .getContext()
+            .notebookPath()
+            .get()
+        )
+        if notebook_path:
+            parts = Path(notebook_path).parts
+            if "case-engenharia-dados" in parts:
+                idx = parts.index("case-engenharia-dados")
+                return str(Path(*parts[: idx + 1]))
+    except Exception:
+        pass
+
+    username = os.getenv("DATABRICKS_USERNAME", "")
+    candidates = [
+        "/Workspace/Repos/case-engenharia-dados",
+        f"/Workspace/Repos/{username}/case-engenharia-dados",
+        "/Workspace/Users/case-engenharia-dados",
+        f"/Workspace/Users/{username}/case-engenharia-dados",
+    ]
+    for candidate in candidates:
+        if Path(candidate).exists():
+            return candidate
+
+    raise RuntimeError(
+        "Nao foi possivel localizar a raiz do repositorio no Databricks. "
+        "Verifique se o Git folder foi importado ou defina CASE_PROJECT_ROOT."
+    )
+
+
+sys.path.insert(0, os.path.join(_repo_root(), "src"))
 
 from config import (  # noqa: E402
     BRONZE_DIR,
@@ -22,59 +62,3 @@ from config import (  # noqa: E402
     SILVER_DIR,
 )
 from spark_session import create_spark_session  # noqa: E402
-
-
-TABLES = {
-    "bronze_partidas": BRONZE_DIR / "partidas",
-    "silver_fato_partida": SILVER_DIR / "fato_partida",
-    "silver_dim_clube": SILVER_DIR / "dim_clube",
-    "silver_dim_estadio": SILVER_DIR / "dim_estadio",
-    "silver_fato_gols": SILVER_DIR / "fato_gols",
-    "silver_fato_cartoes": SILVER_DIR / "fato_cartoes",
-    "silver_fato_estatisticas": SILVER_DIR / "fato_estatisticas",
-    "silver_dim_jogador": SILVER_DIR / "dim_jogador",
-    "gold_classificacao_por_temporada": GOLD_DIR / "classificacao_por_temporada",
-    "gold_aproveitamento_mandante_visitante": GOLD_DIR / "aproveitamento_mandante_visitante",
-    "gold_artilharia": GOLD_DIR / "artilharia",
-    "gold_evolucao_gols_por_temporada": GOLD_DIR / "evolucao_gols_por_temporada",
-    "gold_estatisticas_medias": GOLD_DIR / "estatisticas_medias",
-    "gold_cartoes_por_clube": GOLD_DIR / "cartoes_por_clube",
-    "gold_desempenho_treinador": GOLD_DIR / "desempenho_treinador",
-    "gold_gols_por_minuto": GOLD_DIR / "gols_por_minuto",
-    "security_jogadores_protegidos": SECURITY_DIR / "jogadores_protegidos",
-    "security_partidas_protegidas": SECURITY_DIR / "partidas_protegidas",
-}
-
-
-def validate_identifier(value: str) -> str:
-    """Aceita somente identificadores simples em comandos SQL."""
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
-        raise ValueError(f"Identificador invalido: {value}")
-    return value
-
-
-def main() -> None:
-    if not IS_DATABRICKS:
-        raise RuntimeError("O registro no Unity Catalog deve ser executado no Databricks.")
-
-    catalog = validate_identifier(DATABRICKS_CATALOG)
-    schema = validate_identifier(DATABRICKS_SCHEMA)
-    spark = create_spark_session(app_name="RegistrarTabelasBrasileirao")
-
-    for table_name, path in TABLES.items():
-        table = validate_identifier(table_name)
-        spark.sql(
-            f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`{table}` "
-            f"USING DELTA LOCATION '{path.as_posix()}'"
-        )
-        print(f"Registrada: {catalog}.{schema}.{table}")
-
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`pipeline_audit` "
-        f"USING JSON LOCATION '{OBSERVABILITY_DIR.as_posix()}'"
-    )
-    print(f"Registrada: {catalog}.{schema}.pipeline_audit")
-
-
-if __name__ == "__main__":
-    main()
