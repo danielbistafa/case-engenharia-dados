@@ -1,4 +1,8 @@
-"""Registra no Unity Catalog as tabelas Delta produzidas pelo pipeline."""
+"""Registra no Unity Catalog as tabelas Delta produzidas pelo pipeline.
+
+Como o Databricks Free Edition/Unity Catalog nao aceita LOCATION com esquema dbfs,
+as tabelas sao criadas como managed tables a partir dos dados armazenados no Volume.
+"""
 
 import os
 import re
@@ -54,6 +58,11 @@ def validate_identifier(value: str) -> str:
     return value
 
 
+def _delta_table_exists(path: Path) -> bool:
+    """Verifica se um diretorio contem uma tabela Delta."""
+    return (path / "_delta_log").exists()
+
+
 def main() -> None:
     if not IS_DATABRICKS:
         raise RuntimeError("O registro no Unity Catalog deve ser executado no Databricks.")
@@ -64,18 +73,26 @@ def main() -> None:
 
     for table_name, path in TABLES.items():
         table = validate_identifier(table_name)
-        location = f"dbfs:{path.as_posix()}"
+        if not _delta_table_exists(path):
+            print(f"Pulando {table}: dados nao encontrados em {path}")
+            continue
+
         spark.sql(
-            f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`{table}` "
-            f"USING DELTA LOCATION '{location}'"
+            f"CREATE OR REPLACE TABLE `{catalog}`.`{schema}`.`{table}` "
+            f"USING DELTA AS SELECT * FROM delta.`{path.as_posix()}`"
         )
         print(f"Registrada: {catalog}.{schema}.{table}")
 
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS `{catalog}`.`{schema}`.`pipeline_audit` "
-        f"USING JSON LOCATION 'dbfs:{OBSERVABILITY_DIR.as_posix()}'"
-    )
-    print(f"Registrada: {catalog}.{schema}.pipeline_audit")
+    # Tabela de auditoria (somente se houver arquivos JSON)
+    json_files = [f for f in OBSERVABILITY_DIR.iterdir() if f.is_file()] if OBSERVABILITY_DIR.exists() else []
+    if json_files:
+        spark.sql(
+            f"CREATE OR REPLACE TABLE `{catalog}`.`{schema}`.`pipeline_audit` "
+            f"USING JSON AS SELECT * FROM json.`{OBSERVABILITY_DIR.as_posix()}`"
+        )
+        print(f"Registrada: {catalog}.{schema}.pipeline_audit")
+    else:
+        print("Tabela pipeline_audit nao criada: nenhum arquivo JSON de auditoria encontrado.")
 
 
 if __name__ == "__main__":
